@@ -20,30 +20,13 @@ public class Test {
         long timeRefresh = System.currentTimeMillis();
         searcher.refresh(names, dates);
         timeRefresh = System.currentTimeMillis() - timeRefresh;
-        System.out.println("Refresh took: " + timeRefresh + "ms.");
+        System.out.println("Refresh took: " + timeRefresh + " ms.");
         // searcher.print();
 
-        List<String> strings = new ArrayList<>(numberOfEntries);
-        for (int i = 0; i < numberOfEntries; i++) {
-            strings.add("" + dates[i] + names[i]);
+        if (!checkTheOrderOfTheElements(searcher, names, dates, numberOfEntries)) {
+            // failed. no need to continue
+            return;
         }
-        Collections.sort(strings);
-
-        boolean errorsFound = false;
-        int errorsCount = 0;
-        for (int i = 0; i < numberOfEntries; i++) {
-            String value = strings.get(i);
-            if (!value.equalsIgnoreCase(searcher.getData().get(i).toString())) {
-                System.err.println("Strings not equals! #" + i
-                        + ": \nExpected: " + value
-                        + "\nActual:   " + searcher.getData().get(i).toString());
-                System.err.println();
-                errorsFound = true;
-                errorsCount++;
-            }
-        }
-        if (!errorsFound) System.out.println("The order of sorted elements is ok.");
-        else System.out.println(errorsCount + " errors found.");
 
 
     }
@@ -65,20 +48,59 @@ public class Test {
         long[] result = new long[numberOfEntries];
 
         for (int i = 0; i < numberOfEntries; i++) {
-            long l = random.nextLong();
+            long l;
 
-            // lets take only full length longs for easier comparison
-            if (l < 999999999999999999L) {
-                i--;
-                continue;
+            if (i >= numberOfEntries - 20) {    // lets make last 20 entries the same
+                l = Long.MAX_VALUE;
+            } else {
+                l = random.nextLong();
+
+                // lets take only full length longs for easier comparison
+                if (l < 999999999999999999L) {
+                    i--;
+                    continue;
+                }
+
+                // and only positive ones
+                if (l < 0) l *= -1;
             }
-
-            // and only positive ones
-            if (l < 0) l *= -1;
 
             result[i] = l;
         }
 
         return result;
+    }
+
+    private static boolean checkTheOrderOfTheElements(
+            ISearcherImpl implementation,
+            String[] names,
+            long[] dates,
+            int numberOfEntries) {
+
+        List<String> strings = new ArrayList<>(numberOfEntries);
+        for (int i = 0; i < numberOfEntries; i++) {
+            strings.add("" + dates[i] + " " + names[i]);
+        }
+        Collections.sort(strings);
+
+        int errorsCount = 0;
+        for (int i = 0; i < numberOfEntries; i++) {
+            String value = strings.get(i);
+            if (!value.equalsIgnoreCase(implementation.getData().get(i).toString())) {
+                System.err.println("Strings not equals! #" + i
+                        + ": \nExpected: " + value
+                        + "\nActual:   " + implementation.getData().get(i).toString());
+                System.err.println();
+                errorsCount++;
+            }
+        }
+        if (errorsCount == 0) {
+            System.out.println("The order of sorted elements is ok.");
+        } else {
+            System.out.println(errorsCount + " errors found.");
+            return false;
+        }
+
+        return true;
     }
 }

@@ -40,7 +40,7 @@ public class ISearcherImpl implements ISearcher {
 
     public void print() {
         for (Entry entry : data) {
-            System.out.println(entry.getTimestamp() + " / " + entry.getClassName());
+            System.out.println(entry);
         }
     }
 
@@ -61,9 +61,10 @@ public class ISearcherImpl implements ISearcher {
             return timestamp;
         }
 
+        // just for testing
         @Override
         public String toString() {
-            return "" + timestamp + className;
+            return "" + timestamp + " " + className;
         }
     }
 }
