@@ -34,35 +34,36 @@ public class ISearcherImpl implements ISearcher {
         return new String[0];
     }
 
+    public List<Entry> getData() {
+        return data;
+    }
+
     public void print() {
         for (Entry entry : data) {
             System.out.println(entry.getTimestamp() + " / " + entry.getClassName());
         }
     }
 
-    private class Entry {
+    public class Entry {
         private String className;
         private long timestamp;
 
-        public Entry(String className, long timestamp) {
+        Entry(String className, long timestamp) {
             this.className = className;
             this.timestamp = timestamp;
         }
 
-        public String getClassName() {
+        String getClassName() {
             return className;
         }
 
-        public void setClassName(String className) {
-            this.className = className;
-        }
-
-        public long getTimestamp() {
+        long getTimestamp() {
             return timestamp;
         }
 
-        public void setTimestamp(long timestamp) {
-            this.timestamp = timestamp;
+        @Override
+        public String toString() {
+            return "" + timestamp + className;
         }
     }
 }

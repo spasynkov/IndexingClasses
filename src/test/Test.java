@@ -23,6 +23,28 @@ public class Test {
         System.out.println("Refresh took: " + timeRefresh + "ms.");
         // searcher.print();
 
+        List<String> strings = new ArrayList<>(numberOfEntries);
+        for (int i = 0; i < numberOfEntries; i++) {
+            strings.add("" + dates[i] + names[i]);
+        }
+        Collections.sort(strings);
+
+        boolean errorsFound = false;
+        int errorsCount = 0;
+        for (int i = 0; i < numberOfEntries; i++) {
+            String value = strings.get(i);
+            if (!value.equalsIgnoreCase(searcher.getData().get(i).toString())) {
+                System.err.println("Strings not equals! #" + i
+                        + ": \nExpected: " + value
+                        + "\nActual:   " + searcher.getData().get(i).toString());
+                System.err.println();
+                errorsFound = true;
+                errorsCount++;
+            }
+        }
+        if (!errorsFound) System.out.println("The order of sorted elements is ok.");
+        else System.out.println(errorsCount + " errors found.");
+
 
     }
 
@@ -44,7 +66,16 @@ public class Test {
 
         for (int i = 0; i < numberOfEntries; i++) {
             long l = random.nextLong();
+
+            // lets take only full length longs for easier comparison
+            if (l < 999999999999999999L) {
+                i--;
+                continue;
+            }
+
+            // and only positive ones
             if (l < 0) l *= -1;
+
             result[i] = l;
         }
 
