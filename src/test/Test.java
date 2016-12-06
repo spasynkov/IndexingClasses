@@ -1,5 +1,7 @@
 package test;
 
+import indexing.AnotherISearcherImpl;
+import indexing.ISearcher;
 import indexing.ISearcherImpl;
 
 import java.util.*;
@@ -11,11 +13,11 @@ public class Test {
     private static Random random = new Random();
 
     public static void main(String[] args) {
-        int numberOfEntries = 100000;
+        int numberOfEntries = 10000;
         String[] names = generateNames(numberOfEntries);
         long[] dates = generateDates(numberOfEntries);
 
-        ISearcherImpl searcher = new ISearcherImpl();
+        ISearcher searcher = new AnotherISearcherImpl();
 
         long timeRefresh = System.currentTimeMillis();
         searcher.refresh(names, dates);
@@ -23,12 +25,20 @@ public class Test {
         System.out.println("Refresh took: " + timeRefresh + " ms.");
         // searcher.print();
 
-        if (!checkTheOrderOfTheElements(searcher, names, dates, numberOfEntries)) {
+        /*if (!checkTheOrderOfTheElements(searcher, names, dates, numberOfEntries)) {
             // failed. no need to continue
             return;
+        }*/
+
+        String mask = "abc";
+        long timeGuess = System.currentTimeMillis();
+        String[] result = searcher.guess(mask);
+        timeGuess = System.currentTimeMillis() - timeGuess;
+        System.out.println("Guess took: " + timeGuess + " ms.");
+
+        for (String s : result) {
+            System.out.println(s);
         }
-
-
     }
 
     private static String[] generateNames(int numberOfEntries) {

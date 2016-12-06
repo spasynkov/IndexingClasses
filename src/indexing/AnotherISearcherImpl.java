@@ -40,6 +40,9 @@ public class AnotherISearcherImpl implements ISearcher {
     @Override
     public String[] guess(String start) {
         Set<Integer> indexes = data.get(start);
+        if (indexes == null) {
+            return new String[0];
+        }
         String[] result;
 
         // we need to get only 12 first indexes
