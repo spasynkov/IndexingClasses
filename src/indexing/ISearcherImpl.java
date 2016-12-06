@@ -31,9 +31,11 @@ public class ISearcherImpl implements ISearcher {
 
     @Override
     public String[] guess(String start) {
+
         return new String[0];
     }
 
+    // used for testing
     public List<Entry> getData() {
         return data;
     }
