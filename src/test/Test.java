@@ -15,6 +15,7 @@ import static test.DataGenerator.*;
  * */
 public class Test {
     public static void main(String[] args) {
+        // careful with large numbers here. Generating test data for more than 10 000 entries could be extremely long
         int numberOfEntries = 10000;
         byte maxLengthOfEachWord = 32;
 
