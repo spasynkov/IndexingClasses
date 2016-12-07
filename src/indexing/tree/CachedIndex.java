@@ -25,11 +25,9 @@ class CachedIndex {
         private static final CachedIndex[] VALUES = new CachedIndex[maxLength];
 
         static {
-            System.out.println("Creating cached indexes...");
             for (int i = 0; i < VALUES.length; i++) {
                 VALUES[i] = new CachedIndex(i);
             }
-            System.out.println("" + VALUES.length + " indexes created.");
         }
     }
 }

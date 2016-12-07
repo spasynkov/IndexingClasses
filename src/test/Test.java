@@ -4,16 +4,23 @@ import indexing.ISearcher;
 import indexing.ISearcherImpl;
 import indexing.tree.ISearcherImplTree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static test.DataGenerator.*;
 
 /**
  * VM options to be set: -Xmx64m -Xms64m -Xss64m
  * */
 public class Test {
     public static void main(String[] args) {
-        int numberOfEntries = 100000;
-        String[] names = generateNames(numberOfEntries);
-        long[] dates = generateDates(numberOfEntries);
+        int numberOfEntries = 10000;
+        byte maxLengthOfEachWord = 32;
+
+        String[] names = generateNames(numberOfEntries, false, maxLengthOfEachWord);
+        long[] dates = generateDates(numberOfEntries, false);
+        System.out.println("Testing data created. Running test now...\n");
         System.gc();
 
         ISearcher searcher = new ISearcherImplTree();
@@ -22,63 +29,17 @@ public class Test {
         searcher.refresh(names, dates);
         timeRefresh = System.currentTimeMillis() - timeRefresh;
         System.out.println("Refresh took: " + timeRefresh + " ms.");
-        // searcher.print();
 
-        /*if (!checkTheOrderOfTheElements(searcher, names, dates, numberOfEntries)) {
-            // failed. no need to continue
-            return;
-        }*/
-
-        String mask = "abc";
+        String firstFewLettersOfTheWordsToFind = getRandomClassNamePart();
         long timeGuess = System.currentTimeMillis();
-        String[] result = searcher.guess(mask);
+        String[] result = searcher.guess(firstFewLettersOfTheWordsToFind);
         timeGuess = System.currentTimeMillis() - timeGuess;
         System.out.println("Guess took: " + timeGuess + " ms.");
 
+        System.out.println();
         for (String s : result) {
             System.out.println(s);
         }
-    }
-
-    private static String[] generateNames(int numberOfEntries) {
-        Set<String> strings = new HashSet<>();
-        StringBuilder sb = new StringBuilder();
-        while (strings.size() < numberOfEntries) {
-            sb.delete(0, sb.length());  // cleaning
-            for (int i = 0; i < 32; i++) {
-                sb.append((char) (97 + (int)(Math.random() * 26)));
-            }
-            strings.add(sb.toString());
-        }
-        return strings.toArray(new String[strings.size()]);
-    }
-
-    private static long[] generateDates(int numberOfEntries) {
-        Random random = new Random();
-        long[] result = new long[numberOfEntries];
-
-        for (int i = 0; i < numberOfEntries; i++) {
-            long l;
-
-            if (i >= numberOfEntries - 20) {    // lets make last 20 entries the same
-                l = Long.MAX_VALUE;
-            } else {
-                l = random.nextLong();
-
-                // lets take only full length longs for easier comparison
-                if (l < 999999999999999999L) {
-                    i--;
-                    continue;
-                }
-
-                // and only positive ones
-                if (l < 0) l *= -1;
-            }
-
-            result[i] = l;
-        }
-
-        return result;
     }
 
     private static boolean checkTheOrderOfTheElements(

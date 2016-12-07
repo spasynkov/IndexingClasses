@@ -1,14 +1,11 @@
 package indexing.tree;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 class MySuperTree {
     private final Node root = new Node();
-
-    private static int nodesCounter = 0;
 
     void add(final String name, final int index) {
         Node parentNode = root;                         // starting with root node
@@ -25,7 +22,7 @@ class MySuperTree {
         }
     }
 
-    Set<CachedIndex> getIndexes(final String mask) {
+    List<CachedIndex> getIndexes(final String mask) {
         if (mask == null || mask.isEmpty()) {           // no need to process empty mask
             return null;
         }
@@ -44,9 +41,9 @@ class MySuperTree {
     }
 
     private class Node {
-        private final List<Node> kids = new ArrayList<>();
+        private final List<Node> kids = new ArrayList<>(0);
         private final char key;
-        private final Set<CachedIndex> indexes;
+        private final List<CachedIndex> indexes;
 
         /**
          * Use only for ROOT node
@@ -58,9 +55,8 @@ class MySuperTree {
 
         private Node(char key, int index) {
             this.key = key;
-            this.indexes = new HashSet<>(5);
+            this.indexes = new LinkedList<>();
             indexes.add(CachedIndex.getIndexObject(index));
-            System.out.println("New node #" + nodesCounter++ + "(" + key + ") created.");
         }
 
         private Node getNodeByKey(final char c) {

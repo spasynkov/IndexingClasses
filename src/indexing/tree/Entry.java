@@ -1,13 +1,12 @@
 package indexing.tree;
 
-class Entry implements Comparable {
+class Entry implements Comparable<Entry> {
     private String name;
     private long time;
 
     Entry(String name, long time) {
         this.name = name;
         this.time = time;
-        System.out.println("Entry " + name + " " + time + " created.");
     }
 
     String getName() {
@@ -19,10 +18,10 @@ class Entry implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(Entry o) {
         long x = this.time;
-        long y = ((Entry) o).getTime();
+        long y = o.getTime();
         // comparison took from Long class
-        return (x < y) ? 1 : ((x == y) ? this.name.compareTo(((Entry) o).getName()) : -1);
+        return (x < y) ? 1 : ((x == y) ? this.name.compareTo(o.getName()) : -1);
     }
 }

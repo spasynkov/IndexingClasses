@@ -2,7 +2,10 @@ package indexing.tree;
 
 import indexing.ISearcher;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class ISearcherImplTree implements ISearcher {
     private String[] names;
@@ -25,7 +28,7 @@ public class ISearcherImplTree implements ISearcher {
 
     @Override
     public String[] guess(String start) {
-        Set<CachedIndex> indexes = tree.getIndexes(start);
+        List<CachedIndex> indexes = tree.getIndexes(start);
         if (indexes == null) {
             return new String[0];
         }
