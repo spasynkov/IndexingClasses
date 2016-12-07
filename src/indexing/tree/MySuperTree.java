@@ -1,7 +1,6 @@
 package indexing.tree;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 class MySuperTree {
@@ -22,7 +21,7 @@ class MySuperTree {
         }
     }
 
-    List<CachedIndex> getIndexes(final String mask) {
+    MySuperList getIndexes(final String mask) {
         if (mask == null || mask.isEmpty()) {           // no need to process empty mask
             return null;
         }
@@ -40,23 +39,23 @@ class MySuperTree {
         return childNode.indexes;                       // returns indexes stored in last found node
     }
 
-    private class Node {
+    class Node {
         private final List<Node> kids = new ArrayList<>(0);
         private final char key;
-        private final List<CachedIndex> indexes;
+        private final MySuperList indexes;
 
         /**
          * Use only for ROOT node
          * */
-        Node() {
+        private Node() {
             this.key = 0;
             this.indexes = null;
         }
 
         private Node(char key, int index) {
             this.key = key;
-            this.indexes = new LinkedList<>();
-            indexes.add(CachedIndex.getIndexObject(index));
+            this.indexes = new MySuperList();
+            indexes.add(index);
         }
 
         private Node getNodeByKey(final char c) {
@@ -68,7 +67,7 @@ class MySuperTree {
 
 
         private void addIndex(final int index) {
-            indexes.add(CachedIndex.getIndexObject(index));
+            indexes.add(index);
         }
 
         private Node addNode(final char c, final int index) {

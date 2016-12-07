@@ -4,7 +4,6 @@ import indexing.ISearcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class ISearcherImplTree implements ISearcher {
@@ -28,16 +27,15 @@ public class ISearcherImplTree implements ISearcher {
 
     @Override
     public String[] guess(String start) {
-        List<CachedIndex> indexes = tree.getIndexes(start);
+        MySuperList indexes = tree.getIndexes(start);
         if (indexes == null) {
             return new String[0];
         }
 
         List<Entry> list = new ArrayList<>();
-        Iterator<CachedIndex> iterator = indexes.iterator();
         int index;
-        while (iterator.hasNext()) {
-            index = iterator.next().getValue();
+        while (indexes.hasNext()) {
+            index = indexes.getNext();
             list.add(new Entry(names[index], dates[index]));
         }
         Collections.sort(list);

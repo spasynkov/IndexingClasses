@@ -24,6 +24,10 @@ class MySuperList {
         return (currentNodeForGetting = currentNodeForGetting.nextNode).value;
     }
 
+    boolean hasNext() {
+        return currentNodeForGetting.nextNode != null;
+    }
+
     private class Node {
         private Node nextNode;
         private int value;
