@@ -1,5 +1,5 @@
 import indexing.ISearcher;
-import indexing.ISearcherImplTree;
+import indexing.tree.ISearcherImplTree;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,8 +1,8 @@
 package test;
 
-import indexing.AnotherISearcherImpl;
 import indexing.ISearcher;
 import indexing.ISearcherImpl;
+import indexing.tree.ISearcherImplTree;
 
 import java.util.*;
 
@@ -10,14 +10,13 @@ import java.util.*;
  * VM options to be set: -Xmx64m -Xms64m -Xss64m
  * */
 public class Test {
-    private static Random random = new Random();
-
     public static void main(String[] args) {
-        int numberOfEntries = 10000;
+        int numberOfEntries = 100000;
         String[] names = generateNames(numberOfEntries);
         long[] dates = generateDates(numberOfEntries);
+        System.gc();
 
-        ISearcher searcher = new AnotherISearcherImpl();
+        ISearcher searcher = new ISearcherImplTree();
 
         long timeRefresh = System.currentTimeMillis();
         searcher.refresh(names, dates);
@@ -55,6 +54,7 @@ public class Test {
     }
 
     private static long[] generateDates(int numberOfEntries) {
+        Random random = new Random();
         long[] result = new long[numberOfEntries];
 
         for (int i = 0; i < numberOfEntries; i++) {
