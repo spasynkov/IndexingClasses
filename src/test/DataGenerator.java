@@ -145,8 +145,12 @@ class DataGenerator {
 
         long[] result = new long[numberOfEntries];
         long systemTime = System.currentTimeMillis();
-        for (long date : result) {
-            date = systemTime + (long) (Math.random() * numberOfEntries);
+        for (int i = 0; i < result.length; i++) {
+            /*
+            * Each timestamp consists of current time + some random value that depends of number of entries.
+            * Math.sqrt() gives not so randomly data, because we need some repeats in dates for sorting algorithm.
+            * */
+            result[i] = systemTime + (long) (Math.random() * Math.sqrt(numberOfEntries));
         }
 
         return result;
