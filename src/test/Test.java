@@ -8,19 +8,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static test.DataGenerator.*;
+import static test.DataGenerator.generateDates;
+import static test.DataGenerator.generateNames;
 
 /**
  * VM options to be set: -Xmx64m -Xms64m -Xss64m
  * */
 public class Test {
     public static void main(String[] args) {
-        // careful with large numbers here. Generating test data for more than 10 000 entries could be extremely long
-        int numberOfEntries = 10000;
+        int numberOfEntries = 100000;
         byte maxLengthOfEachWord = 32;
 
-        String[] names = generateNames(numberOfEntries, false, maxLengthOfEachWord);
-        long[] dates = generateDates(numberOfEntries, false);
+        String[] names = generateNames(
+                numberOfEntries,
+                false,
+                false,
+                maxLengthOfEachWord);
+
+        long[] dates = generateDates(
+                numberOfEntries,
+                false);
+
         System.out.println("Testing data created. Running test now...\n");
         System.gc();
 
@@ -31,7 +39,9 @@ public class Test {
         timeRefresh = System.currentTimeMillis() - timeRefresh;
         System.out.println("Refresh took: " + timeRefresh + " ms.");
 
-        String firstFewLettersOfTheWordsToFind = getRandomClassNamePart();
+        String randomWord = names[(int) (Math.random() * names.length)];
+        String firstFewLettersOfTheWordsToFind = randomWord.
+                substring(0, (int) (Math.random() * Math.sqrt(randomWord.length())));
         long timeGuess = System.currentTimeMillis();
         String[] result = searcher.guess(firstFewLettersOfTheWordsToFind);
         timeGuess = System.currentTimeMillis() - timeGuess;

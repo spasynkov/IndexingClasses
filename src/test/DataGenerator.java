@@ -94,47 +94,36 @@ class DataGenerator {
             "Component"
     };
 
+    /**
+     * <p>Generates different kinds of unique Strings as class names.</p>
+     * <br>
+     * <p>If shouldBeAbsolutelyRandom and shouldBeLongAndSimilar parameters are both set to false -
+     * then result would contain randomly formed strings from some real java classes parts.</p>
+     * <p>These strings <u>could not be real names</u> of the classes, they just would be formed from parts of real classes names.</p>
+     * <p>For example: ThreadToStreamSystem, ComponentISelectorImpl, QueueKeyScript, etc.</p>
+     *
+     * @param numberOfEntries how many strings should be returned
+     * @param shouldBeAbsolutelyRandom if set to true then all strings would contains from random characters
+     * @param shouldBeLongAndSimilar if set to true then strings would be like:
+     *                               AAA, AAB, AAC, ... , AAZ, AAa, AAb, ... , AAz, ABA, ABB, ...
+     * @param maxCharactersNumberInWord defines the length of each string
+     * @return array of strings
+     */
     static String[] generateNames(
             int numberOfEntries,
             boolean shouldBeAbsolutelyRandom,
+            boolean shouldBeLongAndSimilar,
             byte maxCharactersNumberInWord) {
 
         System.out.println("Generating strings...");
         if (shouldBeAbsolutelyRandom) {
             return generateRandomNames(numberOfEntries, maxCharactersNumberInWord);
         }
-
-        String[] result = new String[numberOfEntries];
-        int counter = 0;
-        boolean repeatedStringFound = false;
-        StringBuilder sb = new StringBuilder(maxCharactersNumberInWord);
-        while (counter < result.length) {
-            sb.delete(0, sb.length());
-
-            int numberOfPartsInWord = (int) (Math.random() * 3) + 1;    // from 1 to 3 parts in a word
-            for (int i = 0; i < numberOfPartsInWord; i++) {
-                sb.append(CLASS_NAMES_PARTS[(int) (Math.random() * CLASS_NAMES_PARTS.length)]);
-            }
-
-            if (sb.length() <= maxCharactersNumberInWord) {
-                for (String s : result) {
-                    if (s == null) break;
-
-                    if (sb.toString().equals(s)) {
-                        repeatedStringFound = true;
-                        break;
-                    }
-                }
-
-                if (!repeatedStringFound) {
-                    result[counter++] = sb.toString();
-                } else {
-                    repeatedStringFound = false;
-                }
-            }
+        if (shouldBeLongAndSimilar) {
+            return generateLongAndSimilarNames(numberOfEntries, maxCharactersNumberInWord);
         }
 
-        return result;
+        return generateStringsFromVocabulary(numberOfEntries, maxCharactersNumberInWord);
     }
 
     static long[] generateDates(int numberOfEntries, boolean shouldBeAbsolutelyRandom) {
@@ -171,6 +160,57 @@ class DataGenerator {
             strings.add(sb.toString());
         }
         return strings.toArray(new String[strings.size()]);
+    }
+
+    private static String[] generateLongAndSimilarNames(int numberOfEntries, byte maxCharactersNumberInWord) {
+        StringBuilder startWith = new StringBuilder(maxCharactersNumberInWord);
+        for (int i = 0; i < maxCharactersNumberInWord; i++) {
+            startWith.append('A');
+        }
+
+        String[] result = new String[numberOfEntries];
+        result[0] = startWith.toString();
+
+        StringBuilder sb = new StringBuilder(maxCharactersNumberInWord);
+        for (int i = 1; i < numberOfEntries; i++) {
+            sb.delete(0, sb.length());
+            sb.append(result[i - 1]);
+            char currentCharacter;
+            for (int j = sb.length() - 1; j >= 0 ; j--) {
+                currentCharacter = sb.charAt(j);
+                if (currentCharacter != 'z') {
+                    if (currentCharacter == 'Z') {
+                        sb.setCharAt(j, 'a');
+                    } else {
+                        sb.setCharAt(j, ++currentCharacter);
+                    }
+                    break;
+                } else {
+                    sb.setCharAt(j, 'A');
+                }
+            }
+            result[i] = sb.toString();
+        }
+        return result;
+    }
+
+    private static String[] generateStringsFromVocabulary(int numberOfEntries, byte maxCharactersNumberInWord) {
+        Set<String> result = new HashSet<>(numberOfEntries);
+        StringBuilder sb = new StringBuilder(maxCharactersNumberInWord);
+
+        while (result.size() < numberOfEntries) {
+            sb.delete(0, sb.length());
+
+            int numberOfPartsInWord = (int) (Math.random() * 3) + 1;    // from 1 to 3 parts in a word
+            for (int i = 0; i < numberOfPartsInWord; i++) {
+                sb.append(CLASS_NAMES_PARTS[(int) (Math.random() * CLASS_NAMES_PARTS.length)]);
+            }
+
+            if (sb.length() <= maxCharactersNumberInWord) {
+                result.add(sb.toString());
+            }
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     private static long[] generateRandomDates(int numberOfEntries) {
