@@ -1,9 +1,7 @@
 package test;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 
 class DataGenerator {
@@ -95,19 +93,23 @@ class DataGenerator {
             "Component"
     };
 
+    private static final int MIN_NUMBER_OF_ELEMENTS_BEFORE_STARING_TO_READ_DATA_FROM_FILE = 10000;
+    private static final String TEMP_FILE_NAME = "tempFileWithClassNames.couldBeDeleted";
+
     /**
      * <p>Generates different kinds of unique Strings as class names.</p>
      * <br>
      * <p>If shouldBeAbsolutelyRandom and shouldBeLongAndSimilar parameters are both set to false -
-     * then result would contain randomly formed strings from some real java classes parts.</p>
+     * then result would contain randomly formed strings from some real java classes parts.
+     * But be careful, first call could last rather long with numberOfEntries set more than 10 000!</p>
      * <p>These strings <u>could not be real names</u> of the classes, they just would be formed from parts of real classes names.</p>
      * <p>For example: ThreadToStreamSystem, ComponentISelectorImpl, QueueKeyScript, etc.</p>
      *
      * @param numberOfEntries how many strings should be returned
-     * @param shouldBeAbsolutelyRandom if set to true then all strings would contains from random characters
+     * @param shouldBeAbsolutelyRandom if set to true then all strings would be formed from random characters
      * @param shouldBeLongAndSimilar if set to true then strings would be like:
      *                               AAA, AAB, AAC, ... , AAZ, AAa, AAb, ... , AAz, ABA, ABB, ...
-     * @param maxCharactersNumberInWord defines the length of each string
+     * @param maxCharactersNumberInWord defines the length of strings to be generated
      * @return array of strings
      */
     static String[] generateNames(
@@ -198,7 +200,16 @@ class DataGenerator {
 
     private static String[] generateStringsFromVocabulary(int numberOfEntries, byte maxCharactersNumberInWord) {
         String[] result = new String[numberOfEntries];
-        int counter = 0;
+        int lastAddedElementIndexInResultFromFile = 0;
+
+        if (numberOfEntries > MIN_NUMBER_OF_ELEMENTS_BEFORE_STARING_TO_READ_DATA_FROM_FILE
+                && isTempFileWithDataExists()) {
+            String[] dataFromFile = getDataFromFile(result.length);
+            System.arraycopy(dataFromFile, 0, result, 0, dataFromFile.length);
+            lastAddedElementIndexInResultFromFile = dataFromFile.length;
+        }
+
+        int counter = lastAddedElementIndexInResultFromFile;
         boolean repeatedStringFound = false;
         StringBuilder sb = new StringBuilder(maxCharactersNumberInWord);
         while (counter < result.length) {
@@ -227,12 +238,43 @@ class DataGenerator {
             }
         }
 
+        // append generated data to file for later use
+        if (lastAddedElementIndexInResultFromFile < result.length) {
+            addGeneratedDataToFile(lastAddedElementIndexInResultFromFile, result);
+        }
+
         return result;
     }
 
     private static boolean isTempFileWithDataExists() {
-        File file = new File("tempFileWithClassNames.couldBeDeleted");
+        File file = new File(TEMP_FILE_NAME);
         return file.exists() && file.isFile();
+    }
+
+    private static String[] getDataFromFile(int length) {
+        List<String> strings = new ArrayList<>(MIN_NUMBER_OF_ELEMENTS_BEFORE_STARING_TO_READ_DATA_FROM_FILE);
+        try (BufferedReader reader = new BufferedReader(new FileReader(TEMP_FILE_NAME))) {
+            int stringsCounter = 0;
+            while (stringsCounter < length && reader.ready()) {
+                strings.add(reader.readLine());
+                stringsCounter++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return strings.toArray(new String[strings.size()]);
+    }
+
+    private static void addGeneratedDataToFile(int startIndex, String[] strings) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEMP_FILE_NAME, true))) {
+            for (int i = startIndex + 1; i < strings.length; i++) {
+                writer.write(strings[i]);
+                writer.newLine();
+            }
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static long[] generateRandomDates(int numberOfEntries) {
