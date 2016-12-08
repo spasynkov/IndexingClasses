@@ -1,17 +1,17 @@
 package indexing.tree;
 
-class MySuperListForInts {
+class MySuperList<E> {
     private final Node root = new Node();
 
     private Node currentNodeForAdding;
     private Node currentNodeForGetting;
 
-    MySuperListForInts() {
+    MySuperList() {
         currentNodeForAdding = root;
         currentNodeForGetting = root;
     }
 
-    void add(int value) {
+    void add(E value) {
         Node newNode = new Node(value);
         currentNodeForAdding.nextNode = newNode;
         currentNodeForAdding = newNode;
@@ -21,7 +21,7 @@ class MySuperListForInts {
         currentNodeForGetting = root;
     }
 
-    int getNext() {
+    E getNext() {
         if (currentNodeForGetting.nextNode == null) {
             throw new IndexOutOfBoundsException("No more nodes left in this list");
         }
@@ -34,16 +34,15 @@ class MySuperListForInts {
 
     private class Node {
         private Node nextNode;
-        private int value;
+        private E value;
 
         /*
         * Used only for root node
         * */
         private Node() {
-            this.value = -1;
         }
 
-        private Node(int value) {
+        private Node(E value) {
             this.value = value;
         }
     }

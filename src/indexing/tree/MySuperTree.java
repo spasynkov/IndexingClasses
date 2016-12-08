@@ -18,7 +18,7 @@ class MySuperTree {
         }
     }
 
-    MySuperListForInts getIndexes(final String mask) {
+    MySuperListForPrimitiveInts getIndexes(final String mask) {
         if (mask == null || mask.isEmpty()) {           // no need to process empty mask
             return null;
         }
@@ -36,10 +36,10 @@ class MySuperTree {
         return childNode.indexes;                       // returns indexes stored in last found node
     }
 
-    class Node {
-        private final MySuperListForNodes kids = new MySuperListForNodes();
+    private class Node {
+        private final MySuperList<Node> kids = new MySuperList<>();
         private final char key;
-        private final MySuperListForInts indexes;
+        private final MySuperListForPrimitiveInts indexes;
 
         /**
          * Use only for ROOT node
@@ -51,7 +51,7 @@ class MySuperTree {
 
         private Node(char key, int index) {
             this.key = key;
-            this.indexes = new MySuperListForInts();
+            this.indexes = new MySuperListForPrimitiveInts();
             indexes.add(index);
         }
 

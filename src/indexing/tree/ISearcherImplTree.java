@@ -27,7 +27,7 @@ public class ISearcherImplTree implements ISearcher {
 
     @Override
     public String[] guess(String start) {
-        MySuperListForInts indexes = tree.getIndexes(start);
+        MySuperListForPrimitiveInts indexes = tree.getIndexes(start);
         if (indexes == null) {
             return new String[0];
         }
