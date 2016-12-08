@@ -16,8 +16,7 @@ import static test.DataGenerator.generateNames;
  * */
 public class Test {
     public static void main(String[] args) {
-        // careful with large numbers here. Generating test data for more than 10 000 entries could be extremely long
-        int numberOfEntries = 10000;
+        int numberOfEntries = 100000;
         byte maxLengthOfEachWord = 32;
 
         String[] names = generateNames(
