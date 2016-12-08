@@ -1,8 +1,5 @@
 package indexing.tree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 class MySuperTree {
     private final Node root = new Node();
 
@@ -21,7 +18,7 @@ class MySuperTree {
         }
     }
 
-    MySuperList getIndexes(final String mask) {
+    MySuperListForInts getIndexes(final String mask) {
         if (mask == null || mask.isEmpty()) {           // no need to process empty mask
             return null;
         }
@@ -40,9 +37,9 @@ class MySuperTree {
     }
 
     class Node {
-        private final List<Node> kids = new ArrayList<>(0);
+        private final MySuperListForNodes kids = new MySuperListForNodes();
         private final char key;
-        private final MySuperList indexes;
+        private final MySuperListForInts indexes;
 
         /**
          * Use only for ROOT node
@@ -54,12 +51,14 @@ class MySuperTree {
 
         private Node(char key, int index) {
             this.key = key;
-            this.indexes = new MySuperList();
+            this.indexes = new MySuperListForInts();
             indexes.add(index);
         }
 
         private Node getNodeByKey(final char c) {
-            for (Node kid : kids) {
+            kids.startGettingFromTheBeginning();
+            while (kids.hasNext()) {
+                Node kid = kids.getNext();
                 if (kid.key == c) return kid;
             }
             return null;

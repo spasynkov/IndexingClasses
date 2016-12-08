@@ -1,12 +1,12 @@
 package indexing.tree;
 
-class MySuperList {
+class MySuperListForInts {
     private final Node root = new Node();
 
     private Node currentNodeForAdding;
     private Node currentNodeForGetting;
 
-    MySuperList() {
+    MySuperListForInts() {
         currentNodeForAdding = root;
         currentNodeForGetting = root;
     }
@@ -15,6 +15,10 @@ class MySuperList {
         Node newNode = new Node(value);
         currentNodeForAdding.nextNode = newNode;
         currentNodeForAdding = newNode;
+    }
+
+    void startGettingFromTheBeginning() {
+        currentNodeForGetting = root;
     }
 
     int getNext() {
