@@ -15,11 +15,15 @@ import static test.DataGenerator.generateNames;
  * VM options to be set: -Xmx64m -Xms64m -Xss64m
  * */
 public class Test {
+    private static String[] names;
+
+    private static final List<Integer> REFRESH_TIMES = new ArrayList<>(100000);
+
     public static void main(String[] args) {
-        int numberOfEntries = 100000;
+        int numberOfEntries = 45000;
         byte maxLengthOfEachWord = 32;
 
-        String[] names = generateNames(
+        names = generateNames(
                 numberOfEntries,
                 false,
                 false,
@@ -37,20 +41,41 @@ public class Test {
         long timeRefresh = System.currentTimeMillis();
         searcher.refresh(names, dates);
         timeRefresh = System.currentTimeMillis() - timeRefresh;
-        System.out.println("Refresh took: " + timeRefresh + " ms.");
+        System.gc();
 
+        for (int i = 0; i < 100000; i++) {
+            System.out.print((i + 1) + ": ");
+            runRefresh(searcher);
+            System.gc();
+        }
+        System.out.println();
+        System.out.println("Refresh took: " + timeRefresh + " ms.");
+        System.out.println("Guess took (in average): " + calculateAverageTime() + " ms.");
+    }
+
+    private static double calculateAverageTime() {
+        int sum = 0;
+        for (int i : REFRESH_TIMES) {
+            sum += i;
+        }
+        return sum / (double) REFRESH_TIMES.size();
+    }
+
+    private static void runRefresh(ISearcher searcher) {
         String randomWord = names[(int) (Math.random() * names.length)];
         String firstFewLettersOfTheWordsToFind = randomWord.
-                substring(0, (int) (Math.random() * Math.sqrt(randomWord.length())));
+                substring(0, (int) (Math.random() * Math.sqrt(randomWord.length())) + 1);
+
         long timeGuess = System.currentTimeMillis();
         String[] result = searcher.guess(firstFewLettersOfTheWordsToFind);
         timeGuess = System.currentTimeMillis() - timeGuess;
-        System.out.println("Guess took: " + timeGuess + " ms.");
+        REFRESH_TIMES.add((int) timeGuess);
+        System.out.println("Guess took " + timeGuess + " ms for string: \"" + firstFewLettersOfTheWordsToFind + "\".");
 
-        System.out.println();
         for (String s : result) {
-            System.out.println(s);
+            System.out.print(s + " ");
         }
+        System.out.println("\n");
     }
 
     private static boolean checkTheOrderOfTheElements(
